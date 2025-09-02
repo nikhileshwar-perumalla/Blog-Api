@@ -4,7 +4,7 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import compression from 'compression';
 import helmet from 'helmet';
-
+import v1routes from './routes/V1/index.js';
 import limiter from './lib/express_rate_limit.js';
 
 
@@ -32,13 +32,12 @@ app.use(helmet());
 
 (async () => {
     try{
-        app.get('/',(req,res)=> {
-            res.json({
-                "Name" : "Nikki",
-                "Age" : " 21",
-                "Hoo" : "Man"
-            })
-        })
+        app.use('/api/v1', v1routes);
+    } catch (error) {
+        console.error('Error loading v1 routes:', error);
+    }
+
+    try {
         app.listen(port ,() => {
             console.log(`Server is running on Port : ${port}`);
         })
@@ -50,3 +49,18 @@ app.use(helmet());
         }
     }
 })();
+
+
+const handleServerShutdown  = async() =>{
+    try{
+        console.log('Server is Shutting down');
+        process.exit(0);
+    }
+    catch(error){
+        console.log('Problem Shutting Error',error);
+
+    }
+}
+
+process.on('SIGINT',handleServerShutdown);
+process.on('SIGTERM',handleServerShutdown);
