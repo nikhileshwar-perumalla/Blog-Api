@@ -6,7 +6,7 @@ import compression from 'compression';
 import helmet from 'helmet';
 import v1routes from './routes/V1/index.js';
 import limiter from './lib/express_rate_limit.js';
-
+import {connectToDatabase,DisconnectingFromDB} from './lib/Mongoose.js'
 
 const corsOptions = {
     origin: (origin, callback) => {
@@ -32,6 +32,7 @@ app.use(helmet());
 
 (async () => {
     try{
+        await connectToDatabase();
         app.use('/api/v1', v1routes);
     } catch (error) {
         console.error('Error loading v1 routes:', error);
@@ -53,6 +54,7 @@ app.use(helmet());
 
 const handleServerShutdown  = async() =>{
     try{
+        await DisconnectingFromDB();
         console.log('Server is Shutting down');
         process.exit(0);
     }
