@@ -7,6 +7,7 @@ import helmet from 'helmet';
 import v1routes from './routes/V1/index.js';
 import limiter from './lib/express_rate_limit.js';
 import {connectToDatabase,DisconnectingFromDB} from './lib/Mongoose.js'
+import {logger } from './lib/winston.js';
 
 const corsOptions = {
     origin: (origin, callback) => {
@@ -14,7 +15,8 @@ const corsOptions = {
             callback(null,true);
         }
         else{
-            callback(new Error("Error Brother Not allowed"),false)
+            callback(new Error(`Error Brother Not allowed by ${origin}`),false)
+            logger.warn(`Error Brother Not allowed by ${origin}`);
         }
     }
 }
@@ -40,11 +42,11 @@ app.use(helmet());
 
     try {
         app.listen(port ,() => {
-            console.log(`Server is running on Port : ${port}`);
+            logger.info(`Server is running on Port : ${port}`);
         })
     }
     catch (error) {
-        console.error('Error starting server:', error);
+        logger.error('Error starting server:', error);
         if(config.NODE_ENV === 'Production'){
             process.exit(1);
         }
@@ -55,11 +57,11 @@ app.use(helmet());
 const handleServerShutdown  = async() =>{
     try{
         await DisconnectingFromDB();
-        console.log('Server is Shutting down');
+        logger.warn('Server is Shutting down');
         process.exit(0);
     }
     catch(error){
-        console.log('Problem Shutting Error',error);
+        logger.error('Problem Shutting Error',error);
 
     }
 }

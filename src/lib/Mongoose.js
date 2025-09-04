@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import config from "../config/index.js";
+import { logger } from "./winston.js";
 
 const clientOptions = {
     // See MongoDB Node.js Driver options
@@ -18,7 +19,7 @@ export const connectToDatabase = async () => {
     }
     try {
         await mongoose.connect(config.MONGO_URI, clientOptions);
-        console.log("Connected to DB", {
+        logger.info("Connected to DB", {
             uri: config.MONGO_URI,
             options: clientOptions,
         });
@@ -26,14 +27,14 @@ export const connectToDatabase = async () => {
         if (err instanceof Error) {
             throw err;
         }
-        console.error("Error connecting to DB", err);
+        logger.error("Error connecting to DB", err);
     }
 };
 
 export const DisconnectingFromDB = async () => {
     try {
         await mongoose.disconnect();
-        console.log("Disconnected from DB", {
+        logger.info("Disconnected from DB", {
             uri: config.MONGO_URI,
             options: clientOptions,
         });
@@ -41,6 +42,6 @@ export const DisconnectingFromDB = async () => {
         if (err instanceof Error) {
             throw err;
         }
-        console.error("Error disconnecting", err);
+        logger.error("Error disconnecting", err);
     }
 };
