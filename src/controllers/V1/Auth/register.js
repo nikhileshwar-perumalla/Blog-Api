@@ -1,7 +1,8 @@
 import { logger } from '../../../lib/winston.js';
-import config from '../../../config/index.js'
+import config from '../../../config/index.js';
+import User from '../../../../models/user.js';
 
-
+import { Iuser } from '../../../../models/user.js';
 const register = async (req, res) => {
     try{
         res.status(201).json({
