@@ -33,12 +33,10 @@ const userschema = new Schema({
     },
     firstname: {
         type: String,
-        required: [true, 'Firstname likho bhai'],
         maxlength: [20, 'are you mad what  is that first name']
     },
     lastname: {
         type: String,
-        required: [true, 'lastname likho bhai'],
         maxlength: [20, 'are you mad what  is that last name']
     },
     sociallinks: {
