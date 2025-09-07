@@ -2,7 +2,7 @@ import { logger } from '../../../lib/winston.js';
 import config from '../../../config/index.js';
 import User from '../../../../models/user.js';
 import { genUsername } from '../../../../utils/index.js';
-
+import { generateToken, generateRefreshToken } from '../../../lib/jwt.js'; // path corrected if needed
 const register = async (req, res) => {
     const { email, password, role, username } = req.body;
 
@@ -16,6 +16,14 @@ const register = async (req, res) => {
             role
         });
 
+        const accessToken = generateToken(newuser._id);
+        const refreshToken = generateRefreshToken(newuser._id);
+        res.cookie('refreshToken', refreshToken, {
+            httpOnly: true,
+            secure: config.NODE_ENV === 'production', // set secure flag in production
+            sameSite: 'Strict', // adjust as needed
+            maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+        });
         res.status(201).json({
             message: "new User Registered",
             user: {
@@ -23,7 +31,9 @@ const register = async (req, res) => {
                 email: newuser.email,
                 role: newuser.role
             }
+            , accessToken
         });
+        logger.info('new user registered', { userId: newuser._id, email: newuser.email, role: newuser.role });
     } catch (err) {
         res.status(400).json({
             code: 'ServerError',
