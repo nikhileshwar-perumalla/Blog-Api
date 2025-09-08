@@ -10,7 +10,8 @@ const config = {
     JWT_ACCESS_KEY : process.env.JWT_ACCESS_KEY,
     JWT_REFRESH_KEY : process.env.JWT_REFRESH_KEY,
     ACCES_TOKEN_EXPIRY : process.env.ACCES_TOKEN_EXPIRY,
-    REFRESH_TOKEN_EXPIRY : process.env.REFRESH_TOKEN_EXPIRY
+    REFRESH_TOKEN_EXPIRY : process.env.REFRESH_TOKEN_EXPIRY,
+    WhiteList_EMAILS : process.env.WhiteList_EMAILS ? process.env.WhiteList_EMAILS.split(',') : []
 }
 
 export default config;

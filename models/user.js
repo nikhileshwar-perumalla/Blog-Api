@@ -1,4 +1,5 @@
 import { Schema, model } from 'mongoose';
+import bcrypt   from 'bcrypt';
 
 // Converted to valid Mongoose schema (kept original messages & field names)
 const userschema = new Schema({
@@ -48,5 +49,15 @@ const userschema = new Schema({
         youtube: { type: String, maxlength: [100, 'Gimme the YT links bro'] }
     }
 }, { timestamps: true });
+
+userschema.pre('save', async function (next) {
+    if(!this.isModified('password')){
+        next()
+        return;
+    }
+    this.password = await bcrypt.hash(this.password,10);
+    next();
+})
+
 
 export default model('user', userschema);
