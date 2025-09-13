@@ -2,7 +2,9 @@ import { Router } from "express";
 import register from '../../controllers/V1/Auth/register.js';
 import { body } from "express-validator";
 import validationError from '../../../middlewares/validationError.js';
-import  User from '../../../models/user.js'
+import  User from '../../../models/user.js';
+import bcrypt from 'bcrypt';
+import login from "../../controllers/V1/Auth/login.js";
 
 
 const router = Router();
@@ -28,4 +30,36 @@ router.post('/register',body('email')
     validationError
     , register)
 
+
+router.post('/login',
+    body('email')
+        .trim()
+        .notEmpty().withMessage('Email is required')
+        .isEmail().withMessage('Please enter a valid email')
+        .custom(async (value) => {
+            const user = await User.findOne({ email: value });
+            if (!user) {
+                throw new Error('User email or password is invalid');
+            }
+            return true;
+        }),
+    body('password')
+        .notEmpty().withMessage('Password is required')
+        .isLength({ min: 8 }).withMessage('Password must be at least 8 characters long')
+        .custom(async (value, { req }) => {
+            const { email } = req.body;
+            // find user and include password
+            const user = await User.findOne({ email }).select('+password').lean().exec();
+            if (!user) {
+                throw new Error('User email or password is invalid');
+            }
+            const passwordMatch = await bcrypt.compare(value, user.password);
+            if (!passwordMatch) {
+                throw new Error('User email or password is invalid');
+            }
+            return true;
+        }),
+    validationError,
+    login
+);
 export default router;
