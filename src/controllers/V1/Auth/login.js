@@ -44,7 +44,7 @@ const login = async (req, res) => {
         logger.info('user logged in', { userId: user._id, email: user.email });
     } catch (err) {
         logger.error('error during login', { error: err.message, stack: err.stack });
-        res.status(500).json({ code: 'ServerError', message: 'An error occurred', error: err.message });
+        res.status(500).json({ code: 'ServerError', message: 'An error occurred while loggin in', error: err.message });
     }
 };
 
