@@ -2,7 +2,7 @@ import { logger } from '../../../lib/winston.js';
 import config from '../../../config/index.js';
 import User from '../../../../models/user.js';
 import { genUsername } from '../../../../utils/index.js';
-import { generateToken, generateRefreshToken } from '../../../lib/jwt.js'; // path corrected if needed
+import { generateAccessToken, generateRefreshToken } from '../../../lib/jwt.js'; // path corrected if needed
 import token from '../../../../models/token.js'
 const register = async (req, res) => {
     const { email, password, role, username } = req.body;
@@ -27,7 +27,7 @@ const register = async (req, res) => {
         });
 
 
-        const accessToken = generateToken(newuser._id);
+        const accessToken = generateAccessToken(newuser._id);
         const refreshToken = generateRefreshToken(newuser._id);
 
     await token.create({ token: refreshToken, userId: newuser._id });
@@ -61,8 +61,6 @@ const register = async (req, res) => {
         logger.error('error has occurred during registering', { error: err.message, stack: err.stack });
     }
 }
-
-router.post('/refresh_token',)
 
 
 export default register;

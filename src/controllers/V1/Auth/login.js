@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt';
 import User from '../../../../models/user.js';
-import { generateToken, generateRefreshToken } from '../../../lib/jwt.js';
+import { generateAccessToken, generateRefreshToken } from '../../../lib/jwt.js';
 import tokenModel from '../../../../models/token.js';
 import config from '../../../config/index.js';
 import { logger } from '../../../lib/winston.js';
@@ -24,7 +24,7 @@ const login = async (req, res) => {
             return res.status(401).json({ code: 'AuthError', message: 'Invalid credentials' });
         }
 
-        const accessToken = generateToken(user._id);
+    const accessToken = generateAccessToken(user._id);
         const refreshToken = generateRefreshToken(user._id);
 
         await tokenModel.create({ token: refreshToken, userId: user._id });

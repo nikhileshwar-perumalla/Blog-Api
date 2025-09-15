@@ -2,7 +2,7 @@ import config from '../config/index.js';
 import jwt from 'jsonwebtoken';
 
 // Generate access token with provided user id
-export const generateToken = (userid) => {
+export const generateAccessToken = (userid) => {
     if (!userid) throw new Error('userid required for access token');
     return jwt.sign({ userid }, config.JWT_ACCESS_KEY, {
         expiresIn: config.ACCES_TOKEN_EXPIRY,
@@ -18,3 +18,12 @@ export const generateRefreshToken = (userid) => {
         subject: 'refreshApi'
     });
 };
+
+
+export const verifyAccessToken = (token) => {
+    return jwt.verify(token, config.JWT_ACCESS_KEY);
+}
+
+export const verifyRefreshToken = (token) => {
+    return jwt.verify(token, config.JWT_REFRESH_KEY);
+}

@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken';
 import config from '../../../config/index.js';
 import { logger } from '../../../lib/winston.js';
 import Token from '../../../../models/token.js';
-import { generateToken, generateRefreshToken } from '../../../lib/jwt.js';
+import { generateAccessToken, generateRefreshToken } from '../../../lib/jwt.js';
 import User from '../../../../models/user.js';
 
 const refreshToken = async (req, res) => {
@@ -17,6 +17,14 @@ const refreshToken = async (req, res) => {
     try {
       payload = jwt.verify(incoming, config.JWT_REFRESH_KEY);
     } catch (err) {
+      if(err instanceof jwt.TokenExpiredError){
+        logger.info('Refresh token expired', { error: err.message });
+        return res.status(401).json({ code: 'AuthError', message: 'Refresh token expired' });
+      }
+      if(err instanceof jwt.JsonWebTokenError){
+        logger.info('Invalid refresh token', { error: err.message });
+        return res.status(401).json({ code: 'AuthError', message: 'Invalid refresh token' });
+      }
       logger.warn('Invalid refresh token', { error: err.message });
       return res.status(401).json({ code: 'AuthError', message: 'Invalid refresh token' });
     }
@@ -38,8 +46,8 @@ const refreshToken = async (req, res) => {
       return res.status(401).json({ code: 'AuthError', message: 'User not found' });
     }
 
-    // Rotate tokens: create new refresh token and access token
-    const newAccessToken = generateToken(userid);
+  // Rotate tokens: create new refresh token and access token
+  const newAccessToken = generateAccessToken(userid);
     const newRefreshToken = generateRefreshToken(userid);
 
     // Replace stored refresh token for this user
@@ -56,6 +64,7 @@ const refreshToken = async (req, res) => {
       sameSite: 'Strict',
       maxAge: parseInt(config.REFRESH_TOKEN_EXPIRY_MS || (7 * 24 * 60 * 60 * 1000), 10)
     });
+
 
     return res.status(200).json({ accessToken: newAccessToken });
   } catch (err) {
