@@ -38,4 +38,6 @@ const logger = winston.createLogger({
 	silent: config.NODE_ENV === 'test', // Disable logging in test environment
 });
 
+// Export both named and default to avoid import mismatches across the repo
 export { logger };
+export default logger;
