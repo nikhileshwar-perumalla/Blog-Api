@@ -4,7 +4,7 @@ import { verifyAccessToken } from '../src/lib/jwt.js';
 
 
 const authenticate = (req,res,next) => {
-    const authHeader = req.headers['authorization'];
+    const authHeader = req.headers['authorization'] || '';
     if(!authHeader.startsWith('Bearer ')){
         return res.status(401).json({ code : 'AuthError', message : 'No token provided'});
     }

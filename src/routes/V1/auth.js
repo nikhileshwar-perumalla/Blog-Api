@@ -6,7 +6,7 @@ import  User from '../../../models/user.js';
 import bcrypt from 'bcrypt';
 import login from "../../controllers/V1/Auth/login.js";
 import refreshToken from '../../controllers/V1/Auth/refresh_token.js';
-import logout from "../../../src/controllers/V1/Auth/logout.js";
+import logout from "../../controllers/V1/Auth/logout.js";
 import authenticate from '../../../middlewares/authenticate.js';
 
 const router = Router();

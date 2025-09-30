@@ -5,6 +5,9 @@ import cookieParser from 'cookie-parser';
 import compression from 'compression';
 import helmet from 'helmet';
 import v1routes from './routes/V1/index.js';
+import path from 'path';
+import { fileURLToPath } from 'url';
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 import limiter from './lib/express_rate_limit.js';
 import {connectToDatabase,DisconnectingFromDB} from './lib/Mongoose.js'
 import {logger } from './lib/winston.js';
@@ -31,6 +34,13 @@ app.use(compression({
     threshold :1024,
 }))
 app.use(helmet());
+
+// Serve static frontend (robust path based on file location)
+const staticDir = path.resolve(__dirname, '../public');
+app.use(express.static(staticDir));
+app.get('/', (req,res) => {
+    res.sendFile(path.join(staticDir, 'index.html'));
+});
 
 (async () => {
     try{
